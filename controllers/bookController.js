@@ -1,7 +1,7 @@
 const { getDb } = require('../db/mongodb');
 const Book = require('../models/book.js');
 const mongoose = require('mongoose');
-const { validator } = require('validatorjs');
+const  validator  = require('validatorjs');
 const { bookValidationSchema, authorValidationSchema } = require('./validationRules');
 
 

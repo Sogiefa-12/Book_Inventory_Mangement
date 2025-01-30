@@ -2,12 +2,12 @@ const { getDb } = require('../db/mongodb');
 const Author = require('../models/author.js');
 const Book = require('../models/book.js');
 const mongoose = require('mongoose');
-const { validator } = require('validatorjs');
-const { bookValidationSchema, authorValidationSchema } = require('./validationRules')
+const validate = require('validator').validate;
+
+const { bookValidationSchema, authorValidationSchema } = require('./validationRules');
 
 const getAllAuthors = async (req, res) => {
   try {
- 
     const collection = await getDb('authors');
     const result = await collection.find({}).toArray();
 
@@ -21,7 +21,6 @@ const getAllAuthors = async (req, res) => {
 
 const getSingleAuthor = async (req, res) => {
   try {
- 
     const collection = await getDb('authors');
     const authorId = new mongoose.Types.ObjectId(req.params.id);
 
@@ -42,7 +41,6 @@ const getSingleAuthor = async (req, res) => {
 
 const createAuthor = async (req, res) => {
   try {
-   
     const collection = await getDb('authors');
 
     const author = {
@@ -51,13 +49,14 @@ const createAuthor = async (req, res) => {
       bio: req.body.bio,
       books: req.body.books,
     };
+    
 
-      // Validate the author data
-      const authorErrors = validator.validate(author, authorValidationSchema);
-      if (authorErrors.length > 0) {
-        res.status(400).json({ errors: authorErrors });
-        return;
-      }
+     // Validate the author data
+     const errors = validate(author).errors;
+     if (errors.length > 0) {
+       res.status(400).json({ errors: errors });
+       return;
+     }
 
     const response = await collection.insertOne(author);
 
@@ -72,21 +71,23 @@ const createAuthor = async (req, res) => {
   }
 };
 
+
 const updateAuthor = async (req, res) => {
   try {
- 
     const collection = await getDb('authors');
     const authorId = new mongoose.Types.ObjectId(req.params.id);
 
     // Extract the fields from the request body to create the update document
     const updateData = Object.assign({}, req.body);
-    
+
     // Validate the updated author data
-    const authorErrors = validator.validate(updateData, authorValidationSchema);
-    if (authorErrors.length > 0) {
-      res.status(400).json({ errors: authorErrors });
-      return;
-    }
+     // Validate the author data
+     const errors = validate(updateData).errors;
+     if (errors.length > 0) {
+       res.status(400).json({ errors: errors });
+       return;
+     }
+ 
 
     const response = await collection.findOneAndUpdate(
       { _id: authorId },

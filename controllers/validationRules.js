@@ -21,7 +21,7 @@ const bookValidationSchema = {
       },
     publicationYear: { 
         isNumber: {
-            options: { min:4},
+            options: { min:1000},
           errorMessage: 'Publication year must be a number',
         },
       },

@@ -182,29 +182,7 @@ bookRouter.delete('/:id', deleteBook);
  *         description: Success
  */
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Book:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         title:
- *           type: string
- *         authorId:
- *           type: string
- *     Author:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         firstName:
- *           type: string
- *         lastName:
- *           type: string
- */
+
 
 authorRouter.get('/', getAllAuthors);
 authorRouter.post('/', createAuthor);

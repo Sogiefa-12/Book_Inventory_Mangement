@@ -2,9 +2,10 @@ const { getDb } = require('../db/mongodb');
 const Author = require('../models/author.js');
 const Book = require('../models/book.js');
 const mongoose = require('mongoose');
-const validate = require('validator').validate;
 
-const { bookValidationSchema, authorValidationSchema } = require('./validationRules');
+// const validate = require('validator').validate;
+
+// const { bookValidationSchema, authorValidationSchema } = require('./validationRules');
 
 const getAllAuthors = async (req, res) => {
   try {
@@ -51,12 +52,12 @@ const createAuthor = async (req, res) => {
     };
     
 
-     // Validate the author data
-     const errors = validate(author).errors;
-     if (errors.length > 0) {
-       res.status(400).json({ errors: errors });
-       return;
-     }
+    //  // Validate the author data
+    //  const errors = validate(author).errors;
+    //  if (errors.length > 0) {
+    //    res.status(400).json({ errors: errors });
+    //    return;
+    //  }
 
     const response = await collection.insertOne(author);
 
@@ -80,13 +81,13 @@ const updateAuthor = async (req, res) => {
     // Extract the fields from the request body to create the update document
     const updateData = Object.assign({}, req.body);
 
-    // Validate the updated author data
-     // Validate the author data
-     const errors = validate(updateData).errors;
-     if (errors.length > 0) {
-       res.status(400).json({ errors: errors });
-       return;
-     }
+    // // Validate the updated author data
+    //  // Validate the author data
+    //  const errors = validate(updateData).errors;
+    //  if (errors.length > 0) {
+    //    res.status(400).json({ errors: errors });
+    //    return;
+    //  }
  
 
     const response = await collection.findOneAndUpdate(

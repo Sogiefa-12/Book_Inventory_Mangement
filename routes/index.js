@@ -7,6 +7,8 @@ const authorRouter = express.Router();
 
 const { getAllBooks, getSingleBook, createBook, updateBook, deleteBook } = require('../controllers/bookController');
 const { getAllAuthors, getSingleAuthor, getAuthorWithBooks, createAuthor, updateAuthor, deleteAuthor } = require('../controllers/authorController');
+const validation = require('../middleware/validate');
+
 
 /**
  * @swagger
@@ -94,9 +96,9 @@ const { getAllAuthors, getSingleAuthor, getAuthorWithBooks, createAuthor, update
  */
 
 bookRouter.get('/', getAllBooks);
-bookRouter.post('/', createBook);
+bookRouter.post('/', validation.saveBook,createBook);
 bookRouter.get('/:id', getSingleBook);
-bookRouter.put('/:id', updateBook);
+bookRouter.put('/:id', validation.saveBook, updateBook);
 bookRouter.delete('/:id', deleteBook);
 
 /**
@@ -185,9 +187,9 @@ bookRouter.delete('/:id', deleteBook);
 
 
 authorRouter.get('/', getAllAuthors);
-authorRouter.post('/', createAuthor);
+authorRouter.post('/', validation.saveAuthor, createAuthor);
 authorRouter.get('/:id', getSingleAuthor);
-authorRouter.put('/:id', updateAuthor);
+authorRouter.put('/:id', validation.saveAuthor, updateAuthor);
 authorRouter.delete('/:id', deleteAuthor);
 
 module.exports = { bookRouter, authorRouter };

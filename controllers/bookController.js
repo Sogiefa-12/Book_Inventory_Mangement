@@ -1,9 +1,6 @@
 const { getDb } = require('../db/mongodb');
 const Book = require('../models/book.js');
 const mongoose = require('mongoose');
-const  validator  = require('validatorjs');
-const { bookValidationSchema, authorValidationSchema } = require('./validationRules');
-
 
 const getAllBooks = async (req, res) => {
   try {
@@ -54,13 +51,7 @@ const createBook = async (req, res) => {
       isbn: req.body.isbn,
       description: req.body.description,
     };
-    // Validate the book data
-    const bookErrors = validator.validate(book, bookValidationSchema);
-    if (bookErrors.length > 0) {
-      res.status(400).json({ errors: bookErrors });
-      return;
-    }
-
+ 
     const response = await collection.insertOne(book);
 
     if (response.acknowledged) {
@@ -74,20 +65,15 @@ const createBook = async (req, res) => {
   }
 };
 
+
 const updateBook = async (req, res) => {
   try {
     const db = await getDb();
     const collection = await getDb('books');
-    const bookId = new mongoose.ObjectId(req.params.id);
+    const bookId = new mongoose.Types.ObjectId(req.params.id);
 
     // Extract the fields from the request body to create the update document
     const updateData = Object.assign({}, req.body);
-    // Validate the updated book data
-    const bookErrors = validator.validate(updateData, bookValidationSchema); // or authorValidationSchema for author updates
-    if (bookErrors.length > 0) {
-      res.status(400).json({ errors: bookErrors });
-      return;
-    }
 
     const response = await collection.findOneAndUpdate(
       { _id: bookId },
@@ -95,10 +81,10 @@ const updateBook = async (req, res) => {
       { returnDocument: 'after' }
     );
 
-    if (response.matchedCount > 0) {
-      res.status(204).send();
-    } else {
+    if (response === null) {
       res.status(404).json({ message: 'Book not found.' });
+    } else {
+      res.status(204).send();
     }
   } catch (err) {
     console.error('updateBook error: ', err.message);
@@ -107,11 +93,11 @@ const updateBook = async (req, res) => {
   }
 };
 
+const { ObjectId } = require('mongoose').Types;
 const deleteBook = async (req, res) => {
   try {
-  
     const collection = await getDb('books');
-    const bookId = mongoose.ObjectId(req.params.id);
+    const bookId = new ObjectId(req.params.id);
 
     const response = await collection.deleteOne({ _id: bookId });
 
@@ -126,6 +112,7 @@ const deleteBook = async (req, res) => {
     res.status(500).json({ message: 'Error deleting book.' });
   }
 };
+
 
 module.exports = {
   getAllBooks,

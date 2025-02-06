@@ -45,7 +45,7 @@
 
 const express = require('express');
 const passport = require('passport');
-const { oauthCallback } = require('../controllers/oauth2');
+const oauthCallback  = require('../controllers/oauth2');
 const router = express.Router();
 
 // GitHub OAuth routes

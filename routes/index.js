@@ -1,6 +1,3 @@
-
-
-
 const express = require('express');
 const bookRouter = express.Router();
 const authorRouter = express.Router();

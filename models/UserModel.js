@@ -1,39 +1,29 @@
-const { Model } = require('objection');
+const mongoose = require('mongoose');
 
-class UserModel extends Model {
-  static get tableName() {
-    return 'users';
+const UserSchema = new mongoose.Schema({
+  id: { type: String },
+  username: { type: String },
+  email: { type: String },
+  githubId: { type: String },
+});
+
+UserSchema.statics.findOrCreateGithubUser = async (profile) => {
+  // Replace the objection code with Mongoose queries
+  const user = await this.findOne({
+    githubId: profile.id,
+  });
+
+  if (user) {
+    return user;
   }
 
-  static get idColumn() {
-    return 'id';
-  }
+  return this.create({
+    username: profile.username,
+    email: profile.email,
+    githubId: profile.id,
+  });
+};
 
-  static get jsonSchema() {
-    return {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        username: { type: 'string' },
-        email: { type: 'string' },
-        githubId: { type: 'string' },
-      },
-    };
-  }
-
-  static async findOrCreateGithubUser(profile) {
-    const user = await UserModel.query().findOne({ githubId: profile.id });
-
-    if (user) {
-      return user;
-    }
-
-    return UserModel.query().insert({
-      username: profile.username,
-      email: profile.email,
-      githubId: profile.id,
-    });
-  }
-}
+const UserModel = mongoose.model('User', UserSchema);
 
 module.exports = UserModel;

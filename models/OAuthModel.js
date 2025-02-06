@@ -1,27 +1,13 @@
-const { Model } = require('objection');
+const mongoose = require('mongoose');
 
-// Define your OAuth 2.0 model
-class OAuthModel extends Model {
-  static get tableName() {
-    return 'oauth_clients';
-  }
+const OAuthSchema = new mongoose.Schema({
+  id: { type: String },
+  client_id: { type: String },
+  client_secret: { type: String },
+  redirect_uri: { type: String },
+  grant_types: { type: Array },
+});
 
-  static get idColumn() {
-    return 'id';
-  }
-
-  static get jsonSchema() {
-    return {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        client_id: { type: 'string' },
-        client_secret: { type: 'string' },
-        redirect_uri: { type: 'string' },
-        grant_types: { type: 'array' },
-      },
-    };
-  }
-}
+const OAuthModel = mongoose.model('OAuth', OAuthSchema);
 
 module.exports = OAuthModel;

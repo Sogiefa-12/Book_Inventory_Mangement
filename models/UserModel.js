@@ -8,12 +8,12 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.statics.findOrCreateGithubUser = async (profile) => {
-  const user = await this.findOne({ githubId: profile.id });
+  const user = await UserModel.findOne({ githubId: profile.id });
   if (user) {
     return user;
   }
 
-  return this.create({
+  return UserModel.create({
     username: profile.username,
     email: profile.email,
     githubId: profile.id,

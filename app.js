@@ -47,7 +47,6 @@
 
 
 
-
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -61,8 +60,11 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerSpecOptions = require('./generateSwagger');
 const passport = require('passport');
+const GithubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
 const cors = require('cors');
+const oAuthServer  = require('./routes/authRoutes');
+const UserModel  = require('./models/UserModel');
 
 const app = express();
 
@@ -82,8 +84,18 @@ getDb()
 const bookController = require('./controllers/bookController');
 const authorController = require('./controllers/authorController');
 
+// Configure passport-github strategy
+passport.use(new GithubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: process.env.GITHUB_CALLBACK_URL,
+}, async (accessToken, refreshToken, profile, done) => {
+  const user = await UserModel.findOrCreateGithubUser(profile);
+  done(null, user);
+}));
+
 // Register routes
-app.use('/auth', require('./routes/authRoutes'));
+app.use('/auth', oAuthServer);
 app.use('/books', bookRouter);
 app.use('/authors', authorRouter);
 
@@ -98,10 +110,6 @@ app.use(passport.session());
 
 // Error handler
 app.use(errorHandler);
-
-const swaggerSpec = swaggerJsdoc(swaggerSpecOptions);
-
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
-
-// Start server
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});

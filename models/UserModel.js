@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const { Model } = require('objection');
 
 class UserModel extends Model {
@@ -16,54 +15,24 @@ class UserModel extends Model {
       properties: {
         id: { type: 'string' },
         username: { type: 'string' },
-        password: { type: 'string' },
         email: { type: 'string' },
+        githubId: { type: 'string' },
       },
     };
   }
 
-  static async hashPassword(password) {
-    const hash = await bcrypt.hash(password, 10);
-    return hash;
-  }
+  static async findOrCreateGithubUser(profile) {
+    const user = await UserModel.query().findOne({ githubId: profile.id });
 
-  static async comparePassword(password, hashedPassword) {
-    return await bcrypt.compare(password, hashedPassword);
-  }
-
-  async register(username, email, password) {
-    const hashedPassword = await UserModel.hashPassword(password);
-
-    const user = await UserModel.query().insert({
-      username,
-      email,
-      password: hashedPassword,
-    });
-
-    return user;
-  }
-
-  async authenticate(username, password) {
-    const user = await UserModel.query().findOne({
-      username,
-    });
-
-    if (!user) {
-      throw new Error('Invalid username or password');
+    if (user) {
+      return user;
     }
 
-    const isMatch = await UserModel.comparePassword(password, user.password);
-
-    if (!isMatch) {
-      throw new Error('Invalid username or password');
-    }
-
-    return user;
-  }
-
-  async createToken(user) {
-    const token = await oAuthServer.token({ id: user.id });
-    return token;
+    return UserModel.query().insert({
+      username: profile.username,
+      email: profile.email,
+      githubId: profile.id,
+    });
   }
 }
 

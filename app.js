@@ -46,7 +46,6 @@
 // app.listen(port, () => console.log(`Listening on port ${port}...`));
 
 
-
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -60,14 +59,13 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerSpecOptions = require('./generateSwagger');
 const passport = require('passport');
-const GithubStrategy = require('passport-github').Strategy;
+const { Strategy } = require('passport-github');
 const session = require('express-session');
 const cors = require('cors');
 const oAuthServer  = require('./routes/authRoutes');
 const UserModel  = require('./models/UserModel');
 
 const app = express();
-
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -85,7 +83,7 @@ const bookController = require('./controllers/bookController');
 const authorController = require('./controllers/authorController');
 
 // Configure passport-github strategy
-passport.use(new GithubStrategy({
+passport.use(new Strategy({
   clientID: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
   callbackURL: process.env.GITHUB_CALLBACK_URL,

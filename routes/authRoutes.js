@@ -42,10 +42,9 @@
 // module.exports = router;
 
 
-
 const express = require('express');
 const passport = require('passport');
-const oauthCallback  = require('../controllers/oauth2');
+const { oauthCallback } = require('../controllers/oauth2');
 const router = express.Router();
 
 // GitHub OAuth routes
@@ -55,7 +54,7 @@ router.get('/auth/github', passport.authenticate('github', { scope: ['user:email
 router.get(
   '/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
-  oauthCallback.oauthCallback
+  oauthCallback
 );
 
 // Logout route

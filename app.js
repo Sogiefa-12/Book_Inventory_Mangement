@@ -46,24 +46,17 @@
 // app.listen(port, () => console.log(`Listening on port ${port}...`));
 
 
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const { errorHandler } = require('./middleware/error');
-const { bookRouter } = require('./routes/index');
-const { authorRouter } = require('./routes/index');
-const { getDb } = require('./db/mongodb');
-const Book = require('./models/book.js');
-const Author = require('./models/author.js');
-const swaggerUI = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerSpecOptions = require('./generateSwagger');
-const passport = require('passport');
-const { Strategy } = require('passport-github');
-const session = require('express-session');
 const cors = require('cors');
-const oAuthServer  = require('./routes/authRoutes');
-const UserModel  = require('./models/UserModel');
+const session = require('express-session');
+const passport = require('passport');
+const GithubStrategy = require('passport-github').Strategy;
+const { errorHandler } = require('./middleware/error');
+const { getDb } = require('./db/mongodb');
+const UserModel = require('./models/UserModel');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -78,36 +71,39 @@ getDb()
   .then(() => console.log('Connected to MongoDB successfully'))
   .catch((err) => console.error(err));
 
-// Import controllers
-const bookController = require('./controllers/bookController');
-const authorController = require('./controllers/authorController');
-
-// Configure passport-github strategy
-passport.use(new Strategy({
-  clientID: process.env.GITHUB_CLIENT_ID,
-  clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: process.env.GITHUB_CALLBACK_URL,
-}, async (accessToken, refreshToken, profile, done) => {
-  const user = await UserModel.findOrCreateGithubUser(profile);
-  done(null, user);
-}));
-
-// Register routes
-app.use('/auth', oAuthServer);
-app.use('/books', bookRouter);
-app.use('/authors', authorRouter);
-
 // Passport and session middleware
 app.use(session({
-  secret: 'your_session_secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Configure Passport-GitHub Strategy
+passport.use(new GithubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: process.env.GITHUB_CALLBACK_URL,
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Find or create user in the database
+    const user = await UserModel.findOrCreateGithubUser(profile);
+
+    // Successful authentication, redirect to Swagger API docs
+    done(null, user, { redirectTo: '/api/docs' });
+  } catch (err) {
+    done(err, null);
+  }
+}));
+
+// Register routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
+
 // Error handler
 app.use(errorHandler);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

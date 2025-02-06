@@ -42,17 +42,19 @@
 // module.exports = router;
 
 
+
+
 const express = require('express');
 const passport = require('passport');
 const { oauthCallback } = require('../controllers/oauth2');
 const router = express.Router();
 
 // GitHub OAuth routes
-router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
 // Use oauthCallback from the oauth2.js file
 router.get(
-  '/auth/github/callback',
+  '/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   oauthCallback
 );

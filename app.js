@@ -46,12 +46,16 @@
 // app.listen(port, () => console.log(`Listening on port ${port}...`));
 
 
-
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { bookRouter } = require('./routes/index');
+const { authorRouter } = require('./routes/index');
 const session = require('express-session');
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerSpecOptions = require('./generateSwagger');
 const passport = require('passport');
 const GithubStrategy = require('passport-github').Strategy;
 const { errorHandler } = require('./middleware/error');
@@ -104,9 +108,19 @@ passport.use(new GithubStrategy({
 // Register routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
+app.use('/books', bookRouter);
+app.use('/authors', authorRouter);
+
+// Add route handler for the root path ("/")
+app.get('/', (req, res) => {
+  res.send('Welcome to your application');
+});
 
 // Error handler
 app.use(errorHandler);
+const swaggerSpec = swaggerJsdoc(swaggerSpecOptions);
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

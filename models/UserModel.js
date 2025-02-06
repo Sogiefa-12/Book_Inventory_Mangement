@@ -4,15 +4,11 @@ const UserSchema = new mongoose.Schema({
   id: { type: String },
   username: { type: String },
   email: { type: String },
-  githubId: { type: String },
+  githubId: { type: String, unique: true },
 });
 
 UserSchema.statics.findOrCreateGithubUser = async (profile) => {
-  // Replace the objection code with Mongoose queries
-  const user = await this.findOne({
-    githubId: profile.id,
-  });
-
+  const user = await this.findOne({ githubId: profile.id });
   if (user) {
     return user;
   }

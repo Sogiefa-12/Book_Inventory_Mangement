@@ -57,6 +57,7 @@ const GithubStrategy = require('passport-github').Strategy;
 const { errorHandler } = require('./middleware/error');
 const { getDb } = require('./db/mongodb');
 const UserModel = require('./models/UserModel');
+const crypto = require('crypto');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -72,8 +73,11 @@ getDb()
   .catch((err) => console.error(err));
 
 // Passport and session middleware
+
+// Generate a random secret using the crypto module
+const sessionSecret = crypto.randomBytes(48).toString('hex');
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: true,
 }));

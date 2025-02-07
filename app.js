@@ -46,6 +46,8 @@
 // app.listen(port, () => console.log(`Listening on port ${port}...`));
 
 
+
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -99,7 +101,7 @@ passport.use(new GithubStrategy({
     const user = await UserModel.findOrCreateGithubUser(profile);
 
     // Successful authentication, redirect to Swagger API docs
-    done(null, user, { redirectTo: '/' });
+    done(null, user, { redirectTo: '/api-docs' });
   } catch (err) {
     done(err, null);
   }
@@ -115,7 +117,22 @@ app.use('/authors', authorRouter);
 app.get('/', (req, res) => {
   res.send('Welcome to your application');
 });
+app.get('/login', (req, res) => {
+  // Check if the authentication failure is due to an OAuth error
+  if (req.query.error) {
+    // Extract the error and error description from the query string
+    const { error, error_description } = req.query;
 
+    // Log the error for debugging purposes
+    console.error(`OAuth Error: ${error} - ${error_description}`);
+
+    // Send the error message to the user
+    res.status(403).send(`OAuth Error: ${error_description}`);
+  } else {
+    // Redirect to the GitHub OAuth authorization URL for login
+    res.redirect('https://github.com/login/oauth/authorize');
+  }
+});
 // Error handler
 app.use(errorHandler);
 const swaggerSpec = swaggerJsdoc(swaggerSpecOptions);

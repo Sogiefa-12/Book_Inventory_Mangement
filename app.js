@@ -90,6 +90,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Serialize and deserialize user
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser((id, done) => {
+  UserModel.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
 // Configure Passport-GitHub Strategy
 passport.use(new GithubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
@@ -142,3 +152,5 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+

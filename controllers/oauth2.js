@@ -34,7 +34,7 @@ const oauthCallback = async (accessToken, refreshToken, profile, done) => {
     logger.debug('[oauthCallback] User found or created'); // Use logger.debug
 
     // Successful authentication, redirect to Swagger API docs
-    done(null, user, { redirectTo: '/api/docs' });
+    done(null, user, { redirectTo: '/' });
   } catch (err) {
     logger.error('[oauthCallback] Error in oauthCallback:', err.message); // Use logger.error
     done(err, null);

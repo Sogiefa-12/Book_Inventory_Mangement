@@ -6,6 +6,7 @@ const cors = require('cors');
 const { bookRouter } = require('./routes/index');
 const { authorRouter } = require('./routes/index');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerSpecOptions = require('./generateSwagger');
@@ -33,11 +34,17 @@ getDb()
 
 // Generate a random secret using the crypto module
 const sessionSecret = crypto.randomBytes(48).toString('hex');
+const sessionStore = MongoStore.create({
+  mongoUrl: process.env.DATABASE_URI || 'mongodb://127.0.0.1:27017/your_db_name',
+});
+
 app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: true,
+  store: sessionStore, // Use MongoStore for session storage
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

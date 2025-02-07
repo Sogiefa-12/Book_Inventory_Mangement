@@ -55,7 +55,7 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 // Use oauthCallback from the oauth2.js file
 router.get(
   '/github/callback',
-  passport.authenticate('github', { failureRedirect: '/api-docs/' }),
+  passport.authenticate('github', { failureRedirect: 'https://github.com/login/oauth/authorize' }),
   oauthCallback
 );
 

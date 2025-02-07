@@ -95,11 +95,14 @@ passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
-passport.deserializeUser((id, done) => {
-  UserModel.findById(id, (err, user) => {
-    done(err, user);
-  });
-});
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await UserModel.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+})
 // Configure Passport-GitHub Strategy
 passport.use(new GithubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,

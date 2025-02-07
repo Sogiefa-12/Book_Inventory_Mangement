@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.statics.findOrCreateGithubUser = async (profile) => {
-  const UserModel = require('./models/UserModel'); // Import UserModel
+
 
   const user = await UserModel.findOne({ githubId: profile.id });
   if (user) {

@@ -45,7 +45,7 @@
 
 const express = require('express');
 const passport = require('passport');
-const { oauthCallback } = require('../controllers/oauth2');
+// const { oauthCallback } = require('../controllers/oauth2');
 const router = express.Router();
 
 // GitHub OAuth routes
@@ -55,7 +55,10 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 router.get(
   '/github/callback',
   passport.authenticate('github', { failureRedirect: 'https://github.com/login/oauth/authorize' }),
-  oauthCallback
+  (req, res) => {
+    const { oauthCallback } = require('../controllers/oauth2');
+    oauthCallback(req, res, next);
+  }
 );
 
 // Logout route

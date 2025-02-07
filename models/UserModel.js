@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  id: { type: String },
+  _id: { type: String },
   username: { type: String },
   email: { type: String },
   githubId: { type: String, unique: true },
 });
 
 UserSchema.statics.findOrCreateGithubUser = async (profile) => {
+  const UserModel = require('./models/UserModel'); // Import UserModel
+
   const user = await UserModel.findOne({ githubId: profile.id });
   if (user) {
     return user;

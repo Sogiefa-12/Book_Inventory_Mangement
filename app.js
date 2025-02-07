@@ -99,7 +99,7 @@ passport.use(new GithubStrategy({
     const user = await UserModel.findOrCreateGithubUser(profile);
 
     // Successful authentication, redirect to Swagger API docs
-    done(null, user, { redirectTo: '/api/docs' });
+    done(null, user, { redirectTo: '/' });
   } catch (err) {
     done(err, null);
   }

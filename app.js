@@ -77,6 +77,7 @@ app.get('/', async (req, res) => {
   }
 });
 
+
 app.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) {

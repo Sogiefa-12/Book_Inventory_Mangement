@@ -200,9 +200,6 @@ router.put('/:id', ensureAuthenticated, validation.saveAuthor, updateAuthor);
 router.delete('/:id', ensureAuthenticated, deleteAuthor);
 
 
-
-// router.get('/login', passport.authenticate('github'), (req, res) => {});
-
 // router.get('/logout', (req, res) => {
 //     req.logout((err) => {
 //       if (err) { return next(err); }

@@ -9,6 +9,13 @@ const { getAllAuthors, getSingleAuthor, getAuthorWithBooks, createAuthor, update
 const validation = require('../middleware/validate');
 
 
+router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+  req.session.userId = req.user.id; // Save user's ID in the session
+  res.redirect('/');
+});
+
 /**
  * @swagger
  * /books:
@@ -185,6 +192,7 @@ router.delete('/:id',ensureAuthenticated, deleteBook);
 
 
 
+
 router.get('/', getAllAuthors);
 router.post('/', ensureAuthenticated, validation.saveAuthor, createAuthor);
 router.get('/:id', getSingleAuthor);
@@ -193,14 +201,14 @@ router.delete('/:id', ensureAuthenticated, deleteAuthor);
 
 
 
-router.get('/login', passport.authenticate('github'), (req, res) => {});
+// router.get('/login', passport.authenticate('github'), (req, res) => {});
 
-router.get('/logout', (req, res) => {
-    req.logout((err) => {
-      if (err) { return next(err); }
-      res.redirect('/');
-    });
-  });
+// router.get('/logout', (req, res) => {
+//     req.logout((err) => {
+//       if (err) { return next(err); }
+//       res.redirect('/');
+//     });
+//   });
 
 
 module.exports = router;

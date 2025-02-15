@@ -1,6 +1,8 @@
 const express = require('express');
-const bookRouter = express.Router();
-const authorRouter = express.Router();
+const router = express.Router();
+
+const passport = require('passport');
+const ensureAuthenticated = require('../middleware/oauth');
 
 const { getAllBooks, getSingleBook, createBook, updateBook, deleteBook } = require('../controllers/bookController');
 const { getAllAuthors, getSingleAuthor, getAuthorWithBooks, createAuthor, updateAuthor, deleteAuthor } = require('../controllers/authorController');
@@ -92,11 +94,11 @@ const validation = require('../middleware/validate');
  *           description: Success
  */
 
-bookRouter.get('/', getAllBooks);
-bookRouter.post('/', validation.saveBook,createBook);
-bookRouter.get('/:id', getSingleBook);
-bookRouter.put('/:id', validation.saveBook, updateBook);
-bookRouter.delete('/:id', deleteBook);
+router.get('/', getAllBooks);
+router.post('/',ensureAuthenticated, validation.saveBook,createBook);
+router.get('/:id', getSingleBook);
+router.put('/:id',ensureAuthenticated, validation.saveBook, updateBook);
+router.delete('/:id',ensureAuthenticated, deleteBook);
 
 /**
  * @swagger
@@ -183,10 +185,22 @@ bookRouter.delete('/:id', deleteBook);
 
 
 
-authorRouter.get('/', getAllAuthors);
-authorRouter.post('/', validation.saveAuthor, createAuthor);
-authorRouter.get('/:id', getSingleAuthor);
-authorRouter.put('/:id', validation.saveAuthor, updateAuthor);
-authorRouter.delete('/:id', deleteAuthor);
+router.get('/', getAllAuthors);
+router.post('/', ensureAuthenticated, validation.saveAuthor, createAuthor);
+router.get('/:id', getSingleAuthor);
+router.put('/:id', ensureAuthenticated, validation.saveAuthor, updateAuthor);
+router.delete('/:id', ensureAuthenticated, deleteAuthor);
 
-module.exports = { bookRouter, authorRouter };
+
+
+router.get('/login', passport.authenticate('github'), (req, res) => {});
+
+router.get('/logout', (req, res) => {
+    req.logout((err) => {
+      if (err) { return next(err); }
+      res.redirect('/');
+    });
+  });
+
+
+module.exports = router;

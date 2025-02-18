@@ -17,6 +17,14 @@ const sessionStore = MongoStore.create({
   mongoUrl: process.env.DATABASE_URI || 'mongodb://127.0.0.1:27017/your_db_name',
 });
 
+// Connect to MongoDB
+const db = require('./db/mongodb');
+db.getDb().then(() => {
+    console.log('Connected to MongoDB');
+}).catch((err) => {
+    console.error('Failed to connect to MongoDB:', err);
+});
+
 app.use(session({
   secret: sessionSecret,
   resave: false,
@@ -26,7 +34,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors())
+app.use(cors());
 
 app.use('/', require('./routes/index')); // Include routes
 

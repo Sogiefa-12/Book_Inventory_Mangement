@@ -9,12 +9,15 @@ const { getAllAuthors, getSingleAuthor, getAuthorWithBooks, createAuthor, update
 const validation = require('../middleware/validate');
 
 
-router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+//swagger
+router.use('/', require('./swagger'));
 
-router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
-  req.session.userId = req.user.id; // Save user's ID in the session
-  res.redirect('/');
-});
+// router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+// router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+//   req.session.userId = req.user.id; // Save user's ID in the session
+//   res.redirect('/');
+// });
 
 /**
  * @swagger
